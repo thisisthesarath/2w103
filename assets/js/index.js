@@ -243,7 +243,7 @@ function sipRegister() {
             impu: pvalue,
             password: txtPassword.value,
             display_name: txtDisplayName.value,
-            websocket_proxy_url: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.websocket_server_url') : null),
+            websocket_proxy_url: ("wss:pbx.johnsamuel.in:7443"),
             outbound_proxy_url: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.sip_outboundproxy_url') : null),
             ice_servers: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.ice_servers') : null),
             enable_rtcweb_breaker: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.enable_rtcweb_breaker') == "true" : false),
