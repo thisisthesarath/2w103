@@ -228,6 +228,7 @@ function sipCalll701() {
 
 
 function hangUp() {
+    sipRegister();
     if (oSipSessionCall) {
         txtCallStatus.innerHTML = '<i>Terminating the call...</i>';
         oSipSessionCall.hangup({ events_listener: { events: '*', listener: onSipEventSession } });
@@ -269,7 +270,7 @@ function sipCall(s_type) {
             hangUp.disabled = true;
             return;
         }
-        saveCallOptions();
+        // saveCallOptions();
     }
     else if (oSipSessionCall) {
         txtCallStatus.innerHTML = '<i>Connecting...</i>';
@@ -327,6 +328,7 @@ function sipCall(s_type) {
 // terminates the call (SIP BYE or CANCEL)
 function hangUp() {
     if (oSipSessionCall) {
+        sipRegister();
         txtCallStatus.innerHTML = '<i>Terminating the call...</i>';
         oSipSessionCall.hangup({ events_listener: { events: '*', listener: onSipEventSession } });
     }
@@ -599,7 +601,7 @@ function onSipEventStack(e /*SIPml.Stack.Event*/) {
                     // start listening for events
                     oSipSessionCall.setConfiguration(oConfigCall);
 
-                    uiBtnCallSetText('Answer');
+                    // uiBtnCallSetText('Answer');
                     hangUp.value = 'Reject';
                     btnCall.disabled = false;
                     hangUp.disabled = false;
