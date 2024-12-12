@@ -13,7 +13,7 @@ var bDisableVideo = false;
 var viewVideoLocal, viewVideoRemote, viewLocalScreencast; // <video> (webrtc) or <div> (webrtc4all)
 var oConfigCall;
 var oReadyStateTimer;
-var realmm = "pbx.johnsamuel.in";
+var realmm = "ipc.johnsamuel.in";
 var pvalue;
 
 C =
@@ -216,7 +216,7 @@ function sipRegister() {
             return;
         }
         console.log(txtPrivateIdentity.value);
-        pvalue = "sip:"+ txtPrivateIdentity.value + "@pbx.johnsamuel.in";
+        pvalue = "sip:"+ txtPrivateIdentity.value + "@ipc.johnsamuel.in";
         var o_impu = tsip_uri.prototype.Parse(pvalue);
         if (!o_impu || !o_impu.s_user_name || !o_impu.s_host) {
             txtRegStatus.innerHTML = "<b>[" + pvalue + "] is not a valid Public identity</b>";
@@ -243,7 +243,7 @@ function sipRegister() {
             impu: pvalue,
             password: txtPassword.value,
             display_name: txtDisplayName.value,
-            websocket_proxy_url: ("wss:pbx.johnsamuel.in:7443"),
+            websocket_proxy_url: ("wss://ipc.johnsamuel.in:7443"),
             outbound_proxy_url: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.sip_outboundproxy_url') : null),
             ice_servers: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.ice_servers') : null),
             enable_rtcweb_breaker: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.enable_rtcweb_breaker') == "true" : false),
