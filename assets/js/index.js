@@ -84,6 +84,7 @@ window.onload = function () {
 };
 
 function postInit() {
+    sipRegister();
     // check for WebRTC support
     if (!SIPml.isWebRtcSupported()) {
         // is it chrome?
@@ -200,6 +201,31 @@ function sipCalll702() {
     }
 }
 
+function sipCalll703() {
+    // Check if there is an existing call session, which indicates an incoming call
+    if (oSipSessionCall) {
+        // Accept the incoming call
+        txtCallStatus.innerHTML = '<i>Connecting...</i>';
+        oSipSessionCall.accept(oConfigCall);
+    } else {
+        // Create a new call session for an outgoing call
+        oSipSessionCall = oSipStack.newSession("call-audiovideo", oConfigCall);
+
+        // Use a default number or a dynamically set one, could be set via a global variable or a form input
+        var callNumber = "703"; // Default number, consider changing based on your application needs
+
+        // Make the call
+        if (oSipSessionCall.call(callNumber) != 0) {
+            oSipSessionCall = null;
+            txtCallStatus.innerHTML = 'Failed to make call';
+            hangUp.disabled = true;
+        } else {
+            txtCallStatus.innerHTML = '<i>Call initiated...</i>';
+            hangUp.disabled = false;
+        }
+    }
+}
+
 function sipCalll701() {
     // Check if there is an existing call session, which indicates an incoming call
     if (oSipSessionCall) {
@@ -255,10 +281,10 @@ function sipCall(s_type) {
         btnCall.disabled = true;
         hangUp.disabled = false;
 
-        if (window.localStorage) {
-            oConfigCall.bandwidth = tsk_string_to_object(window.localStorage.getItem('org.doubango.expert.bandwidth')); // already defined at stack-level but redifined to use latest values
-            oConfigCall.video_size = tsk_string_to_object(window.localStorage.getItem('org.doubango.expert.video_size')); // already defined at stack-level but redifined to use latest values
-        }
+        // if (window.localStorage) {
+        //     oConfigCall.bandwidth = tsk_string_to_object(window.localStorage.getItem('org.doubango.expert.bandwidth')); // already defined at stack-level but redifined to use latest values
+        //     oConfigCall.video_size = tsk_string_to_object(window.localStorage.getItem('org.doubango.expert.video_size')); // already defined at stack-level but redifined to use latest values
+        // }
 
         // create call session
         oSipSessionCall = oSipStack.newSession(s_type, oConfigCall);
