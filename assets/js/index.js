@@ -270,7 +270,7 @@ function sipCall(s_type) {
             hangUp.disabled = true;
             return;
         }
-        saveCallOptions();
+        // saveCallOptions();
     }
     else if (oSipSessionCall) {
         txtCallStatus.innerHTML = '<i>Connecting...</i>';
@@ -463,8 +463,8 @@ function uiVideoDisplayEvent(b_local, b_added) {
 
 function uiVideoDisplayShowHide(b_show) {
     if (b_show) {
-        tdVideo.style.height = '340px';
-        divVideo.style.height = navigator.appName == 'Microsoft Internet Explorer' ? '100%' : '340px';
+        tdVideo.style.height = '500px';
+        divVideo.style.height = navigator.appName == 'Microsoft Internet Explorer' ? '100%' : '500px';
     }
     else {
         tdVideo.style.height = '0px';
