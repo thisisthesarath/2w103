@@ -138,10 +138,10 @@ function sipRegister() {
     // create SIP stack
     oSipStack = new SIPml.Stack({
         realm: "192.168.53.198",
-        impi: "101",
-        impu: "sip:101@192.168.53.198",
-        password: "101@101",
-        display_name: "Sarath",
+        impi: "102",
+        impu: "sip:102@192.168.53.198",
+        password: "102@102",
+        display_name: "Tino",
         websocket_proxy_url: "wss://192.168.53.198:7443",
         outbound_proxy_url: window.localStorage ? window.localStorage.getItem('org.doubango.expert.sip_outboundproxy_url') : null,
         ice_servers: window.localStorage ? window.localStorage.getItem('org.doubango.expert.ice_servers') : null,
@@ -164,8 +164,8 @@ function sipRegister() {
 }
 
 
-function sipCalll102() {
-    const callNumber = "102"; // Fixed number for this function
+function sipCalll101() {
+    const callNumber = "101"; // Fixed number for this function
 
     if (oSipStack && !oSipSessionCall) {
         // Hide the main app and show the video container
