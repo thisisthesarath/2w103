@@ -137,12 +137,12 @@ function postInit() {
 function sipRegister() {
     // create SIP stack
     oSipStack = new SIPml.Stack({
-        realm: "ipc.johnsamuel.in",
-        impi: "704",
-        impu: "sip:704@ipc.johnsamuel.in",
-        password: "704@704",
+        realm: "192.168.53.198",
+        impi: "101",
+        impu: "sip:101@192.168.53.198",
+        password: "101@101",
         display_name: "Sarath",
-        websocket_proxy_url: "wss://ipc.johnsamuel.in:7443",
+        websocket_proxy_url: "wss://192.168.53.198:7443",
         outbound_proxy_url: window.localStorage ? window.localStorage.getItem('org.doubango.expert.sip_outboundproxy_url') : null,
         ice_servers: window.localStorage ? window.localStorage.getItem('org.doubango.expert.ice_servers') : null,
         enable_rtcweb_breaker: window.localStorage ? window.localStorage.getItem('org.doubango.expert.enable_rtcweb_breaker') == "true" : false,
@@ -164,8 +164,8 @@ function sipRegister() {
 }
 
 
-function sipCalll701() {
-    const callNumber = "701"; // Fixed number for this function
+function sipCalll102() {
+    const callNumber = "102"; // Fixed number for this function
 
     if (oSipStack && !oSipSessionCall) {
         // Hide the main app and show the video container
@@ -201,8 +201,8 @@ function sipCalll701() {
 }
 
 
-function sipCalll702() {
-    const callNumber = "702"; // Fixed number for this function
+function sipCalll103() {
+    const callNumber = "103"; // Fixed number for this function
 
     if (oSipStack && !oSipSessionCall) {
         // Hide the main app and show the video container
@@ -237,8 +237,8 @@ function sipCalll702() {
     }
 }
 
-function sipCalll703() {
-    const callNumber = "703"; // Fixed number for this function
+function sipCalll104() {
+    const callNumber = "104"; // Fixed number for this function
 
     if (oSipStack && !oSipSessionCall) {
         // Hide the main app and show the video container
