@@ -202,64 +202,74 @@ function sipCalll701() {
 
 
 function sipCalll702() {
-    if (oSipSessionCall) {
-        // Accept the incoming call
-        txtCallStatus.innerHTML = '<i>Connecting...</i>';
-        oSipSessionCall.accept(oConfigCall);
-    } else {
-        // Create a new call session for an outgoing call
+    const callNumber = "702"; // Fixed number for this function
+
+    if (oSipStack && !oSipSessionCall) {
+        // Hide the main app and show the video container
+        document.getElementById('app').style.display = 'none';
+        const videoContainer = document.getElementById('divVideo');
+        videoContainer.classList.add('fullscreen');
+        videoContainer.classList.remove('hidden');
+
+        // Show the hangup button
+        document.getElementById('hangupButton').style.display = 'inline-block';
+
+        // Create a new SIP call session
         oSipSessionCall = oSipStack.newSession("call-audiovideo", oConfigCall);
 
-        var callNumber = "702"; // Default number
-
-        // Hide the app div and show the video section
-        document.getElementById('app').style.display = 'none';
-        document.getElementById('divVideo').style.display = 'flex';
-
-        // Make the call
         if (oSipSessionCall.call(callNumber) !== 0) {
+            // If the call fails
             oSipSessionCall = null;
-            txtCallStatus.innerHTML = 'Failed to make call';
-            hangUp.disabled = true;
-
-            // Restore the app div and hide the video section on failure
+            updateCallStatus('Failed to make call');
+            
+            // Restore the app UI
             document.getElementById('app').style.display = 'flex';
-            document.getElementById('divVideo').style.display = 'none';
+            videoContainer.classList.add('hidden');
+            videoContainer.classList.remove('fullscreen');
         } else {
-            txtCallStatus.innerHTML = '<i>Call initiated...</i>';
-            hangUp.disabled = false;
+            // If the call is initiated successfully
+            updateCallStatus('Calling 702...');
         }
+    } else if (oSipSessionCall) {
+        // If there's already an ongoing call, accept it
+        updateCallStatus('Connecting...');
+        oSipSessionCall.accept(oConfigCall);
     }
 }
 
 function sipCalll703() {
-    if (oSipSessionCall) {
-        // Accept the incoming call
-        txtCallStatus.innerHTML = '<i>Connecting...</i>';
-        oSipSessionCall.accept(oConfigCall);
-    } else {
-        // Create a new call session for an outgoing call
+    const callNumber = "703"; // Fixed number for this function
+
+    if (oSipStack && !oSipSessionCall) {
+        // Hide the main app and show the video container
+        document.getElementById('app').style.display = 'none';
+        const videoContainer = document.getElementById('divVideo');
+        videoContainer.classList.add('fullscreen');
+        videoContainer.classList.remove('hidden');
+
+        // Show the hangup button
+        document.getElementById('hangupButton').style.display = 'inline-block';
+
+        // Create a new SIP call session
         oSipSessionCall = oSipStack.newSession("call-audiovideo", oConfigCall);
 
-        var callNumber = "703"; // Default number
-
-        // Hide the app div and show the video section
-        document.getElementById('app').style.display = 'none';
-        document.getElementById('divVideo').style.display = 'flex';
-
-        // Make the call
         if (oSipSessionCall.call(callNumber) !== 0) {
+            // If the call fails
             oSipSessionCall = null;
-            txtCallStatus.innerHTML = 'Failed to make call';
-            hangUp.disabled = true;
-
-            // Restore the app div and hide the video section on failure
+            updateCallStatus('Failed to make call');
+            
+            // Restore the app UI
             document.getElementById('app').style.display = 'flex';
-            document.getElementById('divVideo').style.display = 'none';
+            videoContainer.classList.add('hidden');
+            videoContainer.classList.remove('fullscreen');
         } else {
-            txtCallStatus.innerHTML = '<i>Call initiated...</i>';
-            hangUp.disabled = false;
+            // If the call is initiated successfully
+            updateCallStatus('Calling 703...');
         }
+    } else if (oSipSessionCall) {
+        // If there's already an ongoing call, accept it
+        updateCallStatus('Connecting...');
+        oSipSessionCall.accept(oConfigCall);
     }
 }
 
