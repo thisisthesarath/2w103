@@ -117,6 +117,19 @@
             z-index: 1000;
             font-size: 16px;
         }
+        #txtCallStatus {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.2em;
+            color: white;
+            text-align: center;
+            width: 100%;
+            font-weight: bold;
+            z-index: 10; /* Ensure it's above other content */
+        }
+
 
     </style>
     
@@ -124,15 +137,15 @@
 <body>
     <div class="container">
         <div class="row-fluid">
-            <label style="width: 100%;" align="center" id="txtRegStatus"></label>
-            <label id="txtCallStatus" style="width: 100%;" align="center"></label>
+            <br>
+            <label id="txtRegStatus" style="width: 100%; text-align: center; font-size: 18px; color: #333; font-weight: bold; padding: 10px 0; display: block;"></label>
             <br>                             
         </div>
     </div>
     
     <div class="video-container hidden" id="divVideo">
         <div class="header">
-            <label id="txtCallStatus" style="width: 100%; color: white; text-align: center; font-size: 1.2em; margin-top: 10px;"></label>
+            <label id="txtCallStatus" style="position: absolute; top: 5px; left: 50%; transform: translateX(-50%); font-size: 1.2em; color: white; text-align: center; width: 100%; font-weight: bold;"></label>
         </div>
         <div class="div-video">
             <!-- Remote Video Container -->
@@ -145,10 +158,10 @@
             </div>
         </div>
         <div class="footer">
-            <button class="hangup" id="hangupButton" onclick="hangUp();">Hang Up</button>
             <button class="answer" id="btnAnswer" style="display: none;" onclick="answerCall();">Answer</button>
+            <button class="hangup" id="hangupButton" onclick="hangUp();">Hang Up</button>
         </div>
-    </div>   
+    </div>
     
 
     <div id="app" class="min-h-[calc(100vh-12rem)] flex items-center justify-center p-4">

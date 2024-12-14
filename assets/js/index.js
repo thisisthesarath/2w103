@@ -134,7 +134,6 @@ function postInit() {
     };
 }
 
-// sends SIP REGISTER request to login
 function sipRegister() {
     // create SIP stack
     oSipStack = new SIPml.Stack({
@@ -143,26 +142,27 @@ function sipRegister() {
         impu: "sip:704@ipc.johnsamuel.in",
         password: "704@704",
         display_name: "Sarath",
-        websocket_proxy_url: ("wss://ipc.johnsamuel.in:7443"),
-        outbound_proxy_url: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.sip_outboundproxy_url') : null),
-        ice_servers: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.ice_servers') : null),
-        enable_rtcweb_breaker: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.enable_rtcweb_breaker') == "true" : false),
+        websocket_proxy_url: "wss://ipc.johnsamuel.in:7443",
+        outbound_proxy_url: window.localStorage ? window.localStorage.getItem('org.doubango.expert.sip_outboundproxy_url') : null,
+        ice_servers: window.localStorage ? window.localStorage.getItem('org.doubango.expert.ice_servers') : null,
+        enable_rtcweb_breaker: window.localStorage ? window.localStorage.getItem('org.doubango.expert.enable_rtcweb_breaker') == "true" : false,
         events_listener: { events: '*', listener: onSipEventStack },
-        enable_early_ims: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.disable_early_ims') != "true" : true), // Must be true unless you're using a real IMS network
-        enable_media_stream_cache: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.enable_media_caching') == "true" : false),
-        bandwidth: (window.localStorage ? tsk_string_to_object(window.localStorage.getItem('org.doubango.expert.bandwidth')) : null), // could be redefined a session-level
-        video_size: (window.localStorage ? tsk_string_to_object(window.localStorage.getItem('org.doubango.expert.video_size')) : null), // could be redefined a session-level
+        enable_early_ims: window.localStorage ? window.localStorage.getItem('org.doubango.expert.disable_early_ims') != "true" : true,
+        enable_media_stream_cache: window.localStorage ? window.localStorage.getItem('org.doubango.expert.enable_media_caching') == "true" : false,
+        bandwidth: window.localStorage ? tsk_string_to_object(window.localStorage.getItem('org.doubango.expert.bandwidth')) : null,
+        video_size: window.localStorage ? tsk_string_to_object(window.localStorage.getItem('org.doubango.expert.video_size')) : null,
         sip_headers: [
-                { name: 'User-Agent', value: 'Echo Link' },
-                { name: 'Organization', value: 'BRUTE FORCE' }
+            { name: 'User-Agent', value: 'Echo Link' },
+            { name: 'Organization', value: 'BRUTE FORCE' }
         ]
-    }
-    );
+    });
     if (oSipStack.start() != 0) {
-        txtRegStatus.innerHTML = '<b>Failed to start the SIP stack</b>';
+        document.getElementById('txtRegStatus').innerHTML = '<b>Failed to start the SIP stack</b>';
+    } else {
+        document.getElementById('txtRegStatus').innerHTML = 'Ready to call!';
     }
-    else return;
 }
+
 
 function sipCalll701() {
     const callNumber = "701"; // Fixed number for this function
@@ -652,10 +652,7 @@ function onSipEventSession(e /* SIPml.Session.Event */) {
                     updateCallStatus('Online');
                 }
                 else if (e.session == oSipSessionCall) {
-                    btnHangUp.value = 'HangUp';
-                    btnCall.disabled = true;
-                    btnHangUp.disabled = false;
-                    btnTransfer.disabled = false;
+                    btnCall.disabled = false;
                     if (window.btnBFCP) window.btnBFCP.disabled = false;
 
                     if (bConnected) {
@@ -669,7 +666,6 @@ function onSipEventSession(e /* SIPml.Session.Event */) {
                     }
 
                     txtCallStatus.innerHTML = "<i>" + e.description + "</i>";
-                    divCallOptions.style.opacity = bConnected ? 1 : 0;
 
                     if (SIPml.isWebRtc4AllSupported()) { // IE don't provide stream callback
                         uiVideoDisplayEvent(false, true);
