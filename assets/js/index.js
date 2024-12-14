@@ -1,8 +1,3 @@
-// to avoid caching
-//if (window.location.href.indexOf("svn=") == -1) {
-//    window.location.href += (window.location.href.indexOf("?") == -1 ? "svn=236" : "&svn=229");
-//}
-
 var sTransferNumber;
 var oRingTone, oRingbackTone;
 var oSipStack, oSipSessionRegister, oSipSessionCall, oSipSessionTransferCall;
@@ -17,10 +12,6 @@ var realmm = "ipc.johnsamuel.in";
 var pvalue;
 var i=0;
 
-C =
-{
-    divKeyPadWidth: 220
-};
 
 window.onload = function () {
     window.console && window.console.info && window.console.info("location=" + window.location);
@@ -28,6 +19,7 @@ window.onload = function () {
     videoLocal = document.getElementById("video_local");
     videoRemote = document.getElementById("video_remote");
     audioRemote = document.getElementById("audio_remote");
+
 
     document.onkeyup = onKeyUp;
     document.body.onkeyup = onKeyUp;
@@ -65,10 +57,6 @@ window.onload = function () {
         if (s_mbwd) SIPml.setMaxBandwidthDown(parseFloat(s_mbwd));
         if (s_za) SIPml.setZeroArtifacts(s_za === "true");
         if (s_ndb == "true") SIPml.startNativeDebug();
-
-        //var rinningApps = SIPml.getRunningApps();
-        //var _rinningApps = Base64.decode(rinningApps);
-        //tsk_utils_log_info(_rinningApps);
     }
 
     console.log(i+1);
@@ -176,8 +164,44 @@ function sipRegister() {
     else return;
 }
 
+function sipCalll701() {
+    const callNumber = "701"; // Fixed number for this function
+
+    if (oSipStack && !oSipSessionCall) {
+        // Hide the main app and show the video container
+        document.getElementById('app').style.display = 'none';
+        const videoContainer = document.getElementById('divVideo');
+        videoContainer.classList.add('fullscreen');
+        videoContainer.classList.remove('hidden');
+
+        // Show the hangup button
+        document.getElementById('hangupButton').style.display = 'inline-block';
+
+        // Create a new SIP call session
+        oSipSessionCall = oSipStack.newSession("call-audiovideo", oConfigCall);
+
+        if (oSipSessionCall.call(callNumber) !== 0) {
+            // If the call fails
+            oSipSessionCall = null;
+            updateCallStatus('Failed to make call');
+            
+            // Restore the app UI
+            document.getElementById('app').style.display = 'flex';
+            videoContainer.classList.add('hidden');
+            videoContainer.classList.remove('fullscreen');
+        } else {
+            // If the call is initiated successfully
+            updateCallStatus('Calling 701...');
+        }
+    } else if (oSipSessionCall) {
+        // If there's already an ongoing call, accept it
+        updateCallStatus('Connecting...');
+        oSipSessionCall.accept(oConfigCall);
+    }
+}
+
+
 function sipCalll702() {
-    // Check if there is an existing call session, which indicates an incoming call
     if (oSipSessionCall) {
         // Accept the incoming call
         txtCallStatus.innerHTML = '<i>Connecting...</i>';
@@ -186,14 +210,21 @@ function sipCalll702() {
         // Create a new call session for an outgoing call
         oSipSessionCall = oSipStack.newSession("call-audiovideo", oConfigCall);
 
-        // Use a default number or a dynamically set one, could be set via a global variable or a form input
-        var callNumber = "702"; // Default number, consider changing based on your application needs
+        var callNumber = "702"; // Default number
+
+        // Hide the app div and show the video section
+        document.getElementById('app').style.display = 'none';
+        document.getElementById('divVideo').style.display = 'flex';
 
         // Make the call
-        if (oSipSessionCall.call(callNumber) != 0) {
+        if (oSipSessionCall.call(callNumber) !== 0) {
             oSipSessionCall = null;
             txtCallStatus.innerHTML = 'Failed to make call';
             hangUp.disabled = true;
+
+            // Restore the app div and hide the video section on failure
+            document.getElementById('app').style.display = 'flex';
+            document.getElementById('divVideo').style.display = 'none';
         } else {
             txtCallStatus.innerHTML = '<i>Call initiated...</i>';
             hangUp.disabled = false;
@@ -202,7 +233,6 @@ function sipCalll702() {
 }
 
 function sipCalll703() {
-    // Check if there is an existing call session, which indicates an incoming call
     if (oSipSessionCall) {
         // Accept the incoming call
         txtCallStatus.innerHTML = '<i>Connecting...</i>';
@@ -211,151 +241,104 @@ function sipCalll703() {
         // Create a new call session for an outgoing call
         oSipSessionCall = oSipStack.newSession("call-audiovideo", oConfigCall);
 
-        // Use a default number or a dynamically set one, could be set via a global variable or a form input
-        var callNumber = "703"; // Default number, consider changing based on your application needs
+        var callNumber = "703"; // Default number
+
+        // Hide the app div and show the video section
+        document.getElementById('app').style.display = 'none';
+        document.getElementById('divVideo').style.display = 'flex';
 
         // Make the call
-        if (oSipSessionCall.call(callNumber) != 0) {
+        if (oSipSessionCall.call(callNumber) !== 0) {
             oSipSessionCall = null;
             txtCallStatus.innerHTML = 'Failed to make call';
             hangUp.disabled = true;
+
+            // Restore the app div and hide the video section on failure
+            document.getElementById('app').style.display = 'flex';
+            document.getElementById('divVideo').style.display = 'none';
         } else {
             txtCallStatus.innerHTML = '<i>Call initiated...</i>';
             hangUp.disabled = false;
         }
     }
 }
-
-function sipCalll701() {
-    // Check if there is an existing call session, which indicates an incoming call
-    if (oSipSessionCall) {
-        // Accept the incoming call
-        txtCallStatus.innerHTML = '<i>Connecting...</i>';
-        oSipSessionCall.accept(oConfigCall);
-    } else {
-        // Create a new call session for an outgoing call
-        oSipSessionCall = oSipStack.newSession("call-audiovideo", oConfigCall);
-
-        // Use a default number or a dynamically set one, could be set via a global variable or a form input
-        var callNumber = "701"; // Default number, consider changing based on your application needs
-
-        // Make the call
-        if (oSipSessionCall.call(callNumber) != 0) {
-            oSipSessionCall = null;
-            txtCallStatus.innerHTML = 'Failed to make call';
-            hangUp.disabled = true;
-        } else {
-            txtCallStatus.innerHTML = '<i>Call initiated...</i>';
-            hangUp.disabled = false;
-            saveCallOptions();
-        }
-    }
-}
-
 
 function hangUp() {
+    console.log("Hang Up button clicked");
     if (oSipSessionCall) {
-        txtCallStatus.innerHTML = '<i>Terminating the call...</i>';
-        oSipSessionCall.hangup({ events_listener: { events: '*', listener: onSipEventSession } });
+        console.log("Ending call..."); // Log the state of oSipSessionCall
+        updateCallStatus('Terminating the call...');
+
+        // Terminate the call
+        oSipSessionCall.hangup({
+            events_listener: {
+                events: '*',
+                listener: onSipEventSession,
+            },
+        });
+
+        // Reset UI
+        resetCallUI();
+    } else {
+        console.log("No active call to terminate.");
     }
-    preInit();
+}
+
+// Helper function to reset UI
+function resetCallUI() {
+    document.getElementById('app').style.display = 'flex';
+    const videoContainer = document.getElementById('divVideo');
+    videoContainer.classList.add('hidden');
+    videoContainer.classList.remove('fullscreen');
+    txtCallStatus.innerHTML = 'Call ended';
 }
 
 
-// makes a call (SIP INVITE)
 function sipCall(s_type) {
-    if (oSipStack && !oSipSessionCall && !tsk_string_is_null_or_empty(txtPhoneNumber.value)) {
-        if (s_type == 'call-screenshare') {
-            if (!SIPml.isScreenShareSupported()) {
-                alert('Screen sharing not supported. Are you using chrome 26+?');
-                return;
-            }
-            if (!location.protocol.match('https')) {
-                if (confirm("Screen sharing requires https://. Do you want to be redirected?")) {
-                    sipUnRegister();
-                    window.location = 'https://ns313841.ovh.net/call.htm';
-                }
-                return;
-            }
-        }
-        btnCall.disabled = true;
-        hangUp.disabled = false;
+    if (oSipStack && !oSipSessionCall && txtPhoneNumber.value) {
+        // Hide the main app and show the video container
+        document.getElementById('app').style.display = 'none';
+        const videoContainer = document.getElementById('divVideo');
+        videoContainer.classList.add('fullscreen');
+        videoContainer.classList.remove('hidden');
 
-        // if (window.localStorage) {
-        //     oConfigCall.bandwidth = tsk_string_to_object(window.localStorage.getItem('org.doubango.expert.bandwidth')); // already defined at stack-level but redifined to use latest values
-        //     oConfigCall.video_size = tsk_string_to_object(window.localStorage.getItem('org.doubango.expert.video_size')); // already defined at stack-level but redifined to use latest values
-        // }
+        // Show the hangup button
+        document.getElementById('hangupButton').style.display = 'inline-block';
 
-        // create call session
+        // Create a new SIP call session
         oSipSessionCall = oSipStack.newSession(s_type, oConfigCall);
-        // make call
-        if (oSipSessionCall.call(txtPhoneNumber.value) != 0) {
+        if (oSipSessionCall.call(txtPhoneNumber.value) !== 0) {
             oSipSessionCall = null;
-            txtCallStatus.value = 'Failed to make call';
-            btnCall.disabled = false;
-            hangUp.disabled = true;
-            return;
+            updateCallStatus('Failed to make call');
+            document.getElementById('app').style.display = 'flex';
+            videoContainer.classList.add('hidden');
+            videoContainer.classList.remove('fullscreen');
+        } else {
+            updateCallStatus('Calling...');
         }
-        // saveCallOptions();
-    }
-    else if (oSipSessionCall) {
-        txtCallStatus.innerHTML = '<i>Connecting...</i>';
-        oSipSessionCall.accept(oConfigCall);
     }
 }
 
-// transfers the call
-// function sipTransfer() {
-//     if (oSipSessionCall) {
-//         var s_destination = prompt('Enter destination number', '');
-//         if (!tsk_string_is_null_or_empty(s_destination)) {
-//             btnTransfer.disabled = true;
-//             if (oSipSessionCall.transfer(s_destination) != 0) {
-//                 txtCallStatus.innerHTML = '<i>Call transfer failed</i>';
-//                 // btnTransfer.disabled = false;
-//                 return;
-//             }
-//             txtCallStatus.innerHTML = '<i>Transfering the call...</i>';
-//         }
-//     }
-// }
 
-// holds or resumes the call
-// function sipToggleHoldResume() {
-//     if (oSipSessionCall) {
-//         var i_ret;
-//         // btnHoldResume.disabled = true;
-//         txtCallStatus.innerHTML = oSipSessionCall.bHeld ? '<i>Resuming the call...</i>' : '<i>Holding the call...</i>';
-//         i_ret = oSipSessionCall.bHeld ? oSipSessionCall.resume() : oSipSessionCall.hold();
-//         if (i_ret != 0) {
-//             txtCallStatus.innerHTML = '<i>Hold / Resume failed</i>';
-//             // btnHoldResume.disabled = false;
-//             return;
-//         }
-//     }
-// }
-
-// Mute or Unmute the call
-// function sipToggleMute() {
-//     if (oSipSessionCall) {
-//         var i_ret;
-//         var bMute = !oSipSessionCall.bMute;
-//         txtCallStatus.innerHTML = bMute ? '<i>Mute the call...</i>' : '<i>Unmute the call...</i>';
-//         i_ret = oSipSessionCall.mute('audio'/*could be 'video'*/, bMute);
-//         if (i_ret != 0) {
-//             txtCallStatus.innerHTML = '<i>Mute / Unmute failed</i>';
-//             return;
-//         }
-//         oSipSessionCall.bMute = bMute;
-//         // btnMute.value = bMute ? "Unmute" : "Mute";
-//     }
-// }
-
-// terminates the call (SIP BYE or CANCEL)
-function hangUp() {
+function answerCall() {
     if (oSipSessionCall) {
-        txtCallStatus.innerHTML = '<i>Terminating the call...</i>';
-        oSipSessionCall.hangup({ events_listener: { events: '*', listener: onSipEventSession } });
+        oSipSessionCall.accept(oConfigCall);
+
+        // Stop the ringtone
+        stopRingTone();
+
+        // Update UI for the video container
+        document.getElementById('app').style.display = 'none';
+        const videoContainer = document.getElementById('divVideo');
+        videoContainer.classList.add('fullscreen');
+        videoContainer.classList.remove('hidden');
+
+        // Hide the Answer button and show the Hangup button
+        document.getElementById('btnAnswer').style.display = 'none';
+        document.getElementById('hangupButton').style.display = 'inline-block';
+
+        // Update the call status
+        updateCallStatus('Call in Progress...');
     }
 }
 
@@ -386,29 +369,6 @@ function stopRingbackTone() {
     try { ringbacktone.pause(); }
     catch (e) { }
 }
-
-// function toggleFullScreen() {
-//     if (videoRemote.webkitSupportsFullscreen) {
-//         fullScreen(!videoRemote.webkitDisplayingFullscreen);
-//     }
-//     else {
-//         fullScreen(!bFullScreen);
-//     }
-// }
-
-// function openKeyPad() {
-//     divKeyPad.style.visibility = 'visible';
-//     divKeyPad.style.left = ((document.body.clientWidth - C.divKeyPadWidth) >> 1) + 'px';
-//     divKeyPad.style.top = '70px';
-//     divGlassPanel.style.visibility = 'visible';
-// }
-
-// function closeKeyPad() {
-//     divKeyPad.style.left = '0px';
-//     divKeyPad.style.top = '0px';
-//     divKeyPad.style.visibility = 'hidden';
-//     divGlassPanel.style.visibility = 'hidden';
-// }
 
 function fullScreen(b_fs) {
     bFullScreen = b_fs;
@@ -457,19 +417,17 @@ function onKeyUp(evt) {
     }
 }
 
-// function onDivCallCtrlMouseMove(evt) {
-//     try { // IE: DOM not ready
-//         if (tsk_utils_have_stream()) {
-//             btnCall.disabled = (!tsk_utils_have_stream() || !oSipSessionRegister || !oSipSessionRegister.is_connected());
-//             document.getElementById("divCallCtrl").onmousemove = null; // unsubscribe
-//         }
-//     }
-//     catch (e) { }
-// }
+function onDivCallCtrlMouseMove(evt) {
+    try { // IE: DOM not ready
+        if (tsk_utils_have_stream()) {
+            btnCall.disabled = (!tsk_utils_have_stream() || !oSipSessionRegister || !oSipSessionRegister.is_connected());
+            document.getElementById("divCallCtrl").onmousemove = null; // unsubscribe
+        }
+    }
+    catch (e) { }
+}
 
 function uiOnConnectionEvent(b_connected, b_connecting) { // should be enum: connecting, connected, terminating, terminated
-    // btnRegister.disabled = b_connected || b_connecting;
-    // btnUnRegister.disabled = !b_connected && !b_connecting;
     btnCall.disabled = !(b_connected && tsk_utils_have_webrtc() && tsk_utils_have_stream());
     hangUp.disabled = !oSipSessionCall;
 }
@@ -488,16 +446,27 @@ function uiVideoDisplayEvent(b_local, b_added) {
 }
 
 function uiVideoDisplayShowHide(b_show) {
+    const divVideo = document.getElementById("divVideo");
+    const hangupButton = document.getElementById("hangupButton"); // Get the Hang Up button
+
+    if (!divVideo || !hangupButton) {
+        console.error("divVideo or hangupButton not found in the DOM");
+        return; // Exit if divVideo or hangupButton is null
+    }
+
     if (b_show) {
-        tdVideo.style.height = '500px';
-        divVideo.style.height = navigator.appName == 'Microsoft Internet Explorer' ? '100%' : '500px';
+        divVideo.style.height = '100%'; // Adjust to show the video container fully
+        divVideo.classList.remove("hidden"); // Make the video container visible
+        divVideo.classList.add("fullscreen"); // Add fullscreen styling
+        hangupButton.style.display = "block"; // Show the Hang Up button
+    } else {
+        divVideo.style.height = '0px'; // Collapse the video container
+        divVideo.classList.add("hidden"); // Hide the video container
+        divVideo.classList.remove("fullscreen"); // Remove fullscreen styling
+        hangupButton.style.display = "none"; // Hide the Hang Up button
     }
-    else {
-        tdVideo.style.height = '0px';
-        divVideo.style.height = '0px';
-    }
-    // btnFullScreen.disabled = !b_show;
 }
+
 
 function uiDisableCallOptions() {
     if (window.localStorage) {
@@ -507,46 +476,43 @@ function uiDisableCallOptions() {
     }
 }
 
-// function uiBtnCallSetText(s_text) {
-//     switch (s_text) {
-//         case "Call":
-//             {
-//                 var bDisableCallBtnOptions = (window.localStorage && window.localStorage.getItem('org.doubango.expert.disable_callbtn_options') == "true");
-//                 btnCall.value = btnCall.innerHTML = bDisableCallBtnOptions ? 'Call' : 'Call <span id="spanCaret" class="caret">';
-//                 btnCall.setAttribute("class", bDisableCallBtnOptions ? "btn btn-primary" : "btn btn-primary dropdown-toggle");
-//                 btnCall.onclick = bDisableCallBtnOptions ? function () { sipCall(bDisableVideo ? 'call-audio' : 'call-audiovideo'); } : null;
-//                 ulCallOptions.style.visibility = bDisableCallBtnOptions ? "hidden" : "visible";
-//                 if (!bDisableCallBtnOptions && ulCallOptions.parentNode != divBtnCallGroup) {
-//                     divBtnCallGroup.appendChild(ulCallOptions);
-//                 }
-//                 else if (bDisableCallBtnOptions && ulCallOptions.parentNode == divBtnCallGroup) {
-//                     document.body.appendChild(ulCallOptions);
-//                 }
+function uiBtnCallSetText(s_text) {
+    switch (s_text) {
+        case "Call":
+            {
+                var bDisableCallBtnOptions = (window.localStorage && window.localStorage.getItem('org.doubango.expert.disable_callbtn_options') == "true");
+                btnCall.value = btnCall.innerHTML = bDisableCallBtnOptions ? 'Call' : 'Call <span id="spanCaret" class="caret">';
+                btnCall.setAttribute("class", bDisableCallBtnOptions ? "btn btn-primary" : "btn btn-primary dropdown-toggle");
+                btnCall.onclick = bDisableCallBtnOptions ? function () { sipCall(bDisableVideo ? 'call-audio' : 'call-audiovideo'); } : null;
+                ulCallOptions.style.visibility = bDisableCallBtnOptions ? "hidden" : "visible";
+                if (!bDisableCallBtnOptions && ulCallOptions.parentNode != divBtnCallGroup) {
+                    divBtnCallGroup.appendChild(ulCallOptions);
+                }
+                else if (bDisableCallBtnOptions && ulCallOptions.parentNode == divBtnCallGroup) {
+                    document.body.appendChild(ulCallOptions);
+                }
 
-//                 break;
-//             }
-//         default:
-//             {
-//                 btnCall.value = btnCall.innerHTML = s_text;
-//                 btnCall.setAttribute("class", "btn btn-primary");
-//                 btnCall.onclick = function () { sipCall(bDisableVideo ? 'call-audio' : 'call-audiovideo'); };
-//                 ulCallOptions.style.visibility = "hidden";
-//                 if (ulCallOptions.parentNode == divBtnCallGroup) {
-//                     document.body.appendChild(ulCallOptions);
-//                 }
-//                 break;
-//             }
-//     }
-// }
+                break;
+            }
+        default:
+            {
+                btnCall.value = btnCall.innerHTML = s_text;
+                btnCall.setAttribute("class", "btn btn-primary");
+                btnCall.onclick = function () { sipCall(bDisableVideo ? 'call-audio' : 'call-audiovideo'); };
+                ulCallOptions.style.visibility = "hidden";
+                if (ulCallOptions.parentNode == divBtnCallGroup) {
+                    document.body.appendChild(ulCallOptions);
+                }
+                break;
+            }
+    }
+}
 
 function uiCallTerminated(s_description) {
-    // uiBtnCallSetText("Call");
+    // Reset the UI to the initial state
     hangUp.value = 'HangUp';
-    // btnHoldResume.value = 'hold';
-    // btnMute.value = "Mute";
     btnCall.disabled = false;
     hangUp.disabled = true;
-    if (window.btnBFCP) window.btnBFCP.disabled = true;
 
     oSipSessionCall = null;
 
@@ -555,7 +521,12 @@ function uiCallTerminated(s_description) {
 
     txtCallStatus.innerHTML = "<i>" + s_description + "</i>";
     uiVideoDisplayShowHide(false);
-    // divCallOptions.style.opacity = 0;
+
+    // Restore the app div and hide the video section
+    document.getElementById('app').style.display = 'flex';
+    const videoContainer = document.getElementById('divVideo');
+    videoContainer.classList.remove('fullscreen');
+    videoContainer.classList.add('hidden');
 
     if (oNotifICall) {
         oNotifICall.cancel();
@@ -565,7 +536,19 @@ function uiCallTerminated(s_description) {
     uiVideoDisplayEvent(false, false);
     uiVideoDisplayEvent(true, false);
 
-    setTimeout(function () { if (!oSipSessionCall) txtCallStatus.innerHTML = ''; }, 2500);
+    setTimeout(function () {
+        if (!oSipSessionCall) txtCallStatus.innerHTML = '';
+    }, 2500);
+}
+
+let txtCallStatus = document.getElementById("txtCallStatus");
+function updateCallStatus(message) {
+    if (txtCallStatus) {
+        txtCallStatus.textContent = message; // Update the call status text
+        txtCallStatus.style.display = "block"; // Ensure it's visible
+    } else {
+        console.error('Unable to update call status. Element "txtCallStatus" not found.');
+    }
 }
 
 // Callback function for SIP Stacks
@@ -626,11 +609,9 @@ function onSipEventStack(e /*SIPml.Stack.Event*/) {
                     // start listening for events
                     oSipSessionCall.setConfiguration(oConfigCall);
 
-                    uiBtnCallSetText('Answer');
-                    hangUp.value = 'Reject';
-                    btnCall.disabled = false;
-                    hangUp.disabled = false;
-
+                    document.getElementById('btnAnswer').style.display = 'inline-block';
+                    document.getElementById('hangupButton').style.display = 'inline-block';
+            
                     startRingTone();
 
                     var sRemoteNumber = (oSipSessionCall.getRemoteFriendlyName() || 'unknown');
@@ -659,7 +640,6 @@ function onSipEventStack(e /*SIPml.Stack.Event*/) {
     }
 };
 
-// Callback function for SIP sessions (INVITE, REGISTER, MESSAGE...)
 function onSipEventSession(e /* SIPml.Session.Event */) {
     tsk_utils_log_info('==session event = ' + e.type);
 
@@ -669,13 +649,13 @@ function onSipEventSession(e /* SIPml.Session.Event */) {
                 var bConnected = (e.type == 'connected');
                 if (e.session == oSipSessionRegister) {
                     uiOnConnectionEvent(bConnected, !bConnected);
-                    // txtRegStatus.innerHTML = "<i>" + e.description + "</i>";
+                    updateCallStatus('Online');
                 }
                 else if (e.session == oSipSessionCall) {
-                    hangUp.value = 'HangUp';
+                    btnHangUp.value = 'HangUp';
                     btnCall.disabled = true;
-                    hangUp.disabled = false;
-                    // btnTransfer.disabled = false;
+                    btnHangUp.disabled = false;
+                    btnTransfer.disabled = false;
                     if (window.btnBFCP) window.btnBFCP.disabled = false;
 
                     if (bConnected) {
@@ -689,7 +669,7 @@ function onSipEventSession(e /* SIPml.Session.Event */) {
                     }
 
                     txtCallStatus.innerHTML = "<i>" + e.description + "</i>";
-                    // divCallOptions.style.opacity = bConnected ? 1 : 0;
+                    divCallOptions.style.opacity = bConnected ? 1 : 0;
 
                     if (SIPml.isWebRtc4AllSupported()) { // IE don't provide stream callback
                         uiVideoDisplayEvent(false, true);
@@ -699,20 +679,24 @@ function onSipEventSession(e /* SIPml.Session.Event */) {
                 break;
             } // 'connecting' | 'connected'
         case 'terminating': case 'terminated':
+            case 'terminated':
             {
-                if (e.session == oSipSessionRegister) {
-                    uiOnConnectionEvent(false, false);
-
+                if (e.session == oSipSessionCall) {
+                    updateCallStatus('Call terminated');
                     oSipSessionCall = null;
-                    oSipSessionRegister = null;
 
-                    txtRegStatus.innerHTML = "<i>" + e.description + "</i>";
-                }
-                else if (e.session == oSipSessionCall) {
-                    uiCallTerminated(e.description);
+                    // Reset the UI
+                    document.getElementById('app').style.display = 'flex';
+                    const videoContainer = document.getElementById('divVideo');
+                    videoContainer.classList.add('hidden');
+                    videoContainer.classList.remove('fullscreen');
+
+                    stopRingbackTone();
+                    stopRingTone();
                 }
                 break;
-            } // 'terminating' | 'terminated'
+            }
+
 
         case 'm_stream_video_local_added':
             {
@@ -742,7 +726,6 @@ function onSipEventSession(e /* SIPml.Session.Event */) {
                 }
                 break;
             }
-
         case 'm_stream_audio_local_added':
         case 'm_stream_audio_local_removed':
         case 'm_stream_audio_remote_added':
@@ -750,95 +733,28 @@ function onSipEventSession(e /* SIPml.Session.Event */) {
             {
                 break;
             }
-
         case 'i_ect_new_call':
             {
                 oSipSessionTransferCall = e.session;
                 break;
             }
-
         case 'i_ao_request':
             {
                 if (e.session == oSipSessionCall) {
                     var iSipResponseCode = e.getSipResponseCode();
                     if (iSipResponseCode == 180 || iSipResponseCode == 183) {
                         startRingbackTone();
-                        txtCallStatus.innerHTML = '<i>Remote ringing...</i>';
+                        updateCallStatus('Remote ringing...');
                     }
                 }
                 break;
             }
-
         case 'm_early_media':
             {
                 if (e.session == oSipSessionCall) {
                     stopRingbackTone();
                     stopRingTone();
-                    txtCallStatus.innerHTML = '<i>Early media started</i>';
-                }
-                break;
-            }
-
-        case 'm_local_hold_ok':
-            {
-                if (e.session == oSipSessionCall) {
-                    if (oSipSessionCall.bTransfering) {
-                        oSipSessionCall.bTransfering = false;
-                        // this.AVSession.TransferCall(this.transferUri);
-                    }
-                    // btnHoldResume.value = 'Resume';
-                    // btnHoldResume.disabled = false;
-                    txtCallStatus.innerHTML = '<i>Call placed on hold</i>';
-                    oSipSessionCall.bHeld = true;
-                }
-                break;
-            }
-        case 'm_local_hold_nok':
-            {
-                if (e.session == oSipSessionCall) {
-                    oSipSessionCall.bTransfering = false;
-                    // btnHoldResume.value = 'Hold';
-                    // btnHoldResume.disabled = false;
-                    txtCallStatus.innerHTML = '<i>Failed to place remote party on hold</i>';
-                }
-                break;
-            }
-        case 'm_local_resume_ok':
-            {
-                if (e.session == oSipSessionCall) {
-                    oSipSessionCall.bTransfering = false;
-                    // btnHoldResume.value = 'Hold';
-                    // btnHoldResume.disabled = false;
-                    txtCallStatus.innerHTML = '<i>Call taken off hold</i>';
-                    oSipSessionCall.bHeld = false;
-
-                    if (SIPml.isWebRtc4AllSupported()) { // IE don't provide stream callback yet
-                        uiVideoDisplayEvent(false, true);
-                        uiVideoDisplayEvent(true, true);
-                    }
-                }
-                break;
-            }
-        case 'm_local_resume_nok':
-            {
-                if (e.session == oSipSessionCall) {
-                    oSipSessionCall.bTransfering = false;
-                    // btnHoldResume.disabled = false;
-                    txtCallStatus.innerHTML = '<i>Failed to unhold call</i>';
-                }
-                break;
-            }
-        case 'm_remote_hold':
-            {
-                if (e.session == oSipSessionCall) {
-                    txtCallStatus.innerHTML = '<i>Placed on hold by remote party</i>';
-                }
-                break;
-            }
-        case 'm_remote_resume':
-            {
-                if (e.session == oSipSessionCall) {
-                    txtCallStatus.innerHTML = '<i>Taken off hold by remote party</i>';
+                    updateCallStatus('Early media started');
                 }
                 break;
             }
@@ -846,70 +762,6 @@ function onSipEventSession(e /* SIPml.Session.Event */) {
             {
                 if (e.session == oSipSessionCall) {
                     txtCallStatus.innerHTML = 'BFCP Info: <i>' + e.description + '</i>';
-                }
-                break;
-            }
-
-        case 'o_ect_trying':
-            {
-                if (e.session == oSipSessionCall) {
-                    txtCallStatus.innerHTML = '<i>Call transfer in progress...</i>';
-                }
-                break;
-            }
-        case 'o_ect_accepted':
-            {
-                if (e.session == oSipSessionCall) {
-                    txtCallStatus.innerHTML = '<i>Call transfer accepted</i>';
-                }
-                break;
-            }
-        case 'o_ect_completed':
-        case 'i_ect_completed':
-            {
-                if (e.session == oSipSessionCall) {
-                    txtCallStatus.innerHTML = '<i>Call transfer completed</i>';
-                    // btnTransfer.disabled = false;
-                    if (oSipSessionTransferCall) {
-                        oSipSessionCall = oSipSessionTransferCall;
-                    }
-                    oSipSessionTransferCall = null;
-                }
-                break;
-            }
-        case 'o_ect_failed':
-        case 'i_ect_failed':
-            {
-                if (e.session == oSipSessionCall) {
-                    txtCallStatus.innerHTML = '<i>Call transfer failed</i>';
-                    // btnTransfer.disabled = false;
-                }
-                break;
-            }
-        case 'o_ect_notify':
-        case 'i_ect_notify':
-            {
-                if (e.session == oSipSessionCall) {
-                    txtCallStatus.innerHTML = "<i>Call Transfer: <b>" + e.getSipResponseCode() + " " + e.description + "</b></i>";
-                    if (e.getSipResponseCode() >= 300) {
-                        if (oSipSessionCall.bHeld) {
-                            oSipSessionCall.resume();
-                        }
-                        // btnTransfer.disabled = false;
-                    }
-                }
-                break;
-            }
-        case 'i_ect_requested':
-            {
-                if (e.session == oSipSessionCall) {
-                    var s_message = "Do you accept call transfer to [" + e.getTransferDestinationFriendlyName() + "]?";//FIXME
-                    if (confirm(s_message)) {
-                        txtCallStatus.innerHTML = "<i>Call transfer in progress...</i>";
-                        oSipSessionCall.acceptTransfer();
-                        break;
-                    }
-                    oSipSessionCall.rejectTransfer();
                 }
                 break;
             }

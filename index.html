@@ -10,167 +10,145 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style type="text/css">
         body {
-            padding-top: 80px;
-            padding-bottom: 40px;
             cursor: wait;
         }
-        .navbar-inner-red {
-            background-color: #600000;
-            background-image: none;
-        }
-        .full-screen, .normal-screen {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-        }
-        .normal-screen {
-            position: relative;
-        }
-        .call-options, .div-keypad {
-            padding: 5px;
-            background-color: #f0f0f0;
-            border-radius: 4px;
-            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
-        }
-        .tab-video, .div-video {
-            width: 60%; /* Set width to 70% of the table cell */
-            margin: 0 auto; /* Center the divs horizontally */
-            height: 500px; /* Adjust height as needed */
-            position: relative; /* Positioning context for absolutely positioned children */
-            transition: height 2s; /* Smooth transition for height */
-            display: flex; /* Use flexbox to center content vertically and horizontally */
-            justify-content: center; /* Center horizontally in the flex container */
-            align-items: center; /* Center vertically in the flex container */
-        }
-
-        .video {
+    
+        .video-container.fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             background-color: #000;
-            opacity: 1; /* Ensure visibility */
-            transition: opacity 2s;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
         }
-
-        .previewvideo {
-            width: 176px; /* Width of the preview video */
-            height: 144px; /* Height of the preview video */
-            position: absolute; /* Position absolutely within the relative parent */
-            right: 20px; /* 20px from the right edge */
-            bottom: 15px; /* 20px from the bottom edge */
-            z-index: 1000; /* Ensure it appears on top */
-        }
-
-        .glass-panel {
-            z-index: 99;
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            opacity: 0.8;
-            background-color: Gray;
-        }
-        .tab-video,
+    
         .div-video {
-            width: 70%;
-            height: 0px;
-            -webkit-transition-property: height;
-            -moz-transition-property: height;
-            -o-transition-property: height;
-            -webkit-transition-duration: 2s;
-            -moz-transition-duration: 2s;
-            -o-transition-duration: 2s;
-        }
-
-        .label-align {
-            display: block;
-            padding-left: 15px;
-            text-indent: -15px;
-        }
-
-        .input-align {
-            width: 13px;
-            height: 13px;
-            padding: 0;
-            margin: 0;
-            vertical-align: bottom;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: calc(100% - 10%); /* Reserve space for the footer (10% of the screen) */
+            background-color: #000;
             position: relative;
-            top: -1px;
-            overflow: hidden;
         }
-
-        .glass-panel {
-            z-index: 99;
-            position: fixed;
+    
+        .remote-video {
+            width: 85%; /* Larger than the local video */
+            height: 85%; /* Maintain aspect ratio */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000;
+        }
+    
+        .remote-video video {
             width: 100%;
             height: 100%;
-            margin: 0;
-            padding: 0;
-            top: 0;
-            left: 0;
-            opacity: 0.8;
-            background-color: Gray;
+            object-fit: contain; /* Ensure the video fits without cropping */
         }
-
-        .div-keypad {
-            z-index: 100;
-            position: fixed;
-            -moz-transition-property: left top;
-            -o-transition-property: left top;
-            -webkit-transition-duration: 2s;
-            -moz-transition-duration: 2s;
-            -o-transition-duration: 2s;
+    
+        .local-video {
+            position: absolute;
+            bottom: 5%;
+            right: 5%;
+            width: 20%; /* Adjust width for local video */
+            height: auto; /* Maintain aspect ratio */
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 2px solid #fff;
+            border-radius: 8px;
+            z-index: 1000;
+        }
+    
+        .local-video video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Ensure local video scales proportionally */
+            border-radius: 8px;
+        }
+    
+        .footer {
+            width: 100%;
+            height: 10%; /* Footer takes 10% of the screen height */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.8);
+        }
+    
+        .footer button {
+            padding: 10px 5%;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            color: #fff;
+            transition: background-color 0.3s ease;
+        }
+    
+        .footer button.hangup {
+            background-color: #dc2626;
+        }
+    
+        .footer button.hangup:hover {
+            background-color: #b91c1c;
+        }
+    
+        .footer button.answer {
+            background-color: #16a34a;
+        }
+    
+        .footer button.answer:hover {
+            background-color: #15803d;
+        }
+        #txtCallStatus {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: black;
+            padding: 5px 10px;
+            border-radius: 5px;
+            z-index: 1000;
+            font-size: 16px;
         }
 
     </style>
+    
 </head>
 <body>
     <div class="container">
         <div class="row-fluid">
+            <label style="width: 100%;" align="center" id="txtRegStatus"></label>
             <label id="txtCallStatus" style="width: 100%;" align="center"></label>
-            <div style="display: flex; justify-content: center; align-items: center;">
-                <table style="width: 50%;">
-                    <tr>
-                        <td>
-                            <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
-                                <input type="text" id="txtPhoneNumber" value="" placeholder="Enter phone number to call" style="flex: 1; height: 100%; padding: 8px;">
-                                <button id="btnCall" class="btn btn-primary" onclick="sipCall('call-audiovideo');">Call</button>
-                                <button style="color: #600000;" onclick="hangUp();">Hang Up</button>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-            <br>
-
-            <table style="width: 100%;">
-                <tr>
-                    <td id="tdVideo" class="tab-video">
-                        <div id="divVideo" class="div-video">
-                            <div id="divVideoRemote" style="position:relative; border:1px solid #009; height:100%; width:100%; z-index: auto; opacity: 1">
-                                <video class="video" width="100%" height="100%" id="video_remote" autoplay="autoplay" style="opacity: 0;
-                                    background-color: #000000; -webkit-transition-property: opacity; -webkit-transition-duration: 2s;"></video>
-                            </div>
-        
-                            <div id="divVideoLocalWrapper" style="margin-left: 0px; border:0px solid #009; z-index: 1000">
-                                <iframe class="previewvideo" style="border:1px #009; z-index: 1000"></iframe>
-                                <div id="divVideoLocal" class="previewvideo" style="border:0px solid #009; z-index: 1000">
-                                    <video class="video" width="100%" height="100%" id="video_local" autoplay="autoplay" muted="true" style="opacity: 0;
-                                        background-color: #000000; -webkit-transition-property: opacity;
-                                        -webkit-transition-duration: 2s;"></video>
-                                </div>
-                            </div>
-                            <div id="divScreencastLocalWrapper" style="margin-left: 90px; border:0px solid #009; z-index: 1000">
-                                <iframe class="previewvideo" style="border:0px solid #009; z-index: 1000"></iframe>
-                                <div id="divScreencastLocal" class="previewvideo" style="border:0px solid #009; z-index: 1000">
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-            </table>
+            <br>                             
         </div>
     </div>
+    
+    <div class="video-container hidden" id="divVideo">
+        <div class="header">
+            <label id="txtCallStatus" style="width: 100%; color: white; text-align: center; font-size: 1.2em; margin-top: 10px;"></label>
+        </div>
+        <div class="div-video">
+            <!-- Remote Video Container -->
+            <div id="divVideoRemote" class="remote-video">
+                <video id="video_remote" autoplay></video>
+            </div>
+            <!-- Local Video (Picture-in-Picture) -->
+            <div id="divVideoLocalWrapper" class="local-video">
+                <video id="video_local" autoplay muted></video>
+            </div>
+        </div>
+        <div class="footer">
+            <button class="hangup" id="hangupButton" onclick="hangUp();">Hang Up</button>
+            <button class="answer" id="btnAnswer" style="display: none;" onclick="answerCall();">Answer</button>
+        </div>
+    </div>   
     
 
     <div id="app" class="min-h-[calc(100vh-12rem)] flex items-center justify-center p-4">
@@ -185,29 +163,25 @@
                     Contacts
                 </button>
             </div>
-
+    
             <div id="content" class="p-4">
+                <!-- Dialpad Section -->
                 <div id="dialpad" class="flex flex-col items-center space-y-4 w-full max-w-xs mx-auto">
                     <div class="w-64 bg-gray-100 border border-gray-300 rounded-md shadow-sm max-h-screen">
-                        <input type="text" id="numberDisplay" class="w-full text-xl text-gray-800 font-mono text-center bg-transparent focus:outline-none" readonly placeholder="Enter number">
+                        <input type="text" id="txtPhoneNumber" value="" placeholder="Enter phone number to call" class="w-full h-full p-2 text-lg focus:outline-none">
                     </div>
-
+    
                     <div class="grid grid-cols-3 gap-2">
                         <!-- Buttons will be dynamically added here -->
                     </div>
-
+    
                     <div class="flex justify-between w-64 space-x-4">
-                        <button id="eraseBtn" class="flex-1 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white font-medium py-2 rounded-md shadow-sm transition">
-                            <i class="lucide-delete mr-1"></i>
-                            Erase
-                        </button>
-                        <button id="callBtn" class="flex-1 flex items-center justify-center bg-green-500 hover:bg-green-600 text-white font-medium py-2 rounded-md shadow-sm transition">
-                            <i class="lucide-phone mr-1"></i>
-                            Call
-                        </button>
+                        <button id="btnClear" class="btn btn-secondary bg-gray-300 hover:bg-gray-400 text-black" onclick="clearNumber();">Clear</button>
+                        <button id="btnCall" class="btn btn-primary bg-blue-500 text-white" onclick="sipCall('call-audiovideo');">Call</button>
                     </div>
                 </div>
-
+    
+                <!-- Contacts Section -->
                 <div id="contacts" class="hidden grid grid-cols-4 gap-8">
                     <div onclick="sipCalll701();" class="flex flex-col items-center bg-white p-4 rounded-lg shadow-lg hover:shadow-2xl transition">
                         <img src="tino.png" alt="Tino" class="w-20 h-20 rounded-full object-cover border-2 border-blue-500">
@@ -224,11 +198,11 @@
                         <h3 class="mt-4 text-lg font-semibold text-gray-700">Sarath</h3>
                         <p class="text-sm text-gray-500">SIP: 703</p>
                     </div>
-                    <!-- Repeat for each contact -->
                 </div>
             </div>
         </div>
     </div>
+    
 
     <script src="./assets/js/jquery.js"></script>
     <script src="./assets/js/index.js"></script>
@@ -238,18 +212,18 @@
         const container = document.getElementById('container');
         const dialpad = document.getElementById('dialpad');
         const contacts = document.getElementById('contacts');
-        const numberDisplay = document.getElementById('numberDisplay');
-        const eraseBtn = document.getElementById('eraseBtn');
-        const callBtn = document.getElementById('callBtn');
+        const txtPhoneNumber = document.getElementById('txtPhoneNumber');
         const dialpadButtons = document.querySelector('#dialpad .grid');
 
+        // Dialpad buttons configuration
         const buttons = [
             '1', '2', '3',
             '4', '5', '6',
             '7', '8', '9',
-            '*', '0', '#',
+            '*', '0', '#'
         ];
 
+        // Generate dialpad buttons dynamically
         buttons.forEach(btn => {
             const button = document.createElement('button');
             button.className = 'w-12 h-12 bg-blue-500 text-white rounded-full shadow-md hover:bg-blue-600 active:scale-95 text-lg flex items-center justify-center transition';
@@ -258,19 +232,17 @@
             dialpadButtons.appendChild(button);
         });
 
-        function handleNumberClick(digit) {
-            numberDisplay.value += digit;
+        // Handle number click
+        function handleNumberClick(num) {
+            txtPhoneNumber.value += num; // Append the clicked number to the input field
         }
 
-        eraseBtn.addEventListener('click', () => {
-            numberDisplay.value = numberDisplay.value.slice(0, -1);
-        });
+        // Clear the input field
+        function clearNumber() {
+            txtPhoneNumber.value = '';
+        }
 
-        callBtn.addEventListener('click', () => {
-            alert('Calling ${numberDisplay.value}');
-            numberDisplay.value = '';
-        });
-
+        // Switch between Dialpad and Contacts tabs
         dialpadTab.addEventListener('click', () => {
             setActiveTab('dialpad');
         });
@@ -300,6 +272,7 @@
                 dialpad.classList.add('hidden');
             }
         }
+
     </script>
 
     <audio id="audio_remote" autoplay></audio>
